@@ -24,7 +24,7 @@ public class Product {
   private String description;
 
   @Column(nullable = false)
-  private Integer price;
+  private Float price;
 
   @Column
   private String imageUrl;
@@ -32,11 +32,14 @@ public class Product {
   @OneToMany(mappedBy = "product")
   private List<OrderProduct> orderProducts = new ArrayList<>();
 
-  public Product(String name, String description, String imageUrl) {
+  public Product(String name, String description, Float price, String imageUrl) {
     this.name = name;
     this.description = description;
     this.imageUrl = imageUrl;
+    this.price = price;
   }
+
+  public Product() {}
 
   public Long getId() {
     return id;
@@ -79,11 +82,11 @@ public class Product {
     this.orderProducts = orderProducts;
   }
 
-  public Integer getPrice() {
+  public Float getPrice() {
     return price;
   }
 
-  public void setPrice(Integer price) {
+  public void setPrice(Float price) {
     this.price = price;
   }
 }
