@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +24,14 @@ public class Product {
   @Column(nullable = false)
   private String description;
 
-  @Column(nullable = true)
+  @Column(nullable = false)
+  private Integer price;
+
+  @Column
   private String imageUrl;
 
-  @ManyToMany(mappedBy = "products")
-  private List<Order> orders = new ArrayList<>();
+  @OneToMany(mappedBy = "product")
+  private List<OrderProduct> orderProducts = new ArrayList<>();
 
   public Product(String name, String description, String imageUrl) {
     this.name = name;
@@ -67,11 +71,20 @@ public class Product {
     this.imageUrl = imageUrl;
   }
 
-  public List<Order> getOrders() {
-    return orders;
+  public List<OrderProduct> getOrderProducts() {
+    return orderProducts;
   }
 
-  public void setOrders(List<Order> orders) {
-    this.orders = orders;
+  public void setOrderProducts(
+    List<OrderProduct> orderProducts) {
+    this.orderProducts = orderProducts;
+  }
+
+  public Integer getPrice() {
+    return price;
+  }
+
+  public void setPrice(Integer price) {
+    this.price = price;
   }
 }

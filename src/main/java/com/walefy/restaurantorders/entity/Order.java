@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +20,11 @@ public class Order {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToMany
-  @JoinTable(
-    name = "order_product",
-    joinColumns = @JoinColumn(name = "order_id"),
-    inverseJoinColumns = @JoinColumn(name = "product_id")
-  )
-  private List<Product> products = new ArrayList<>();
+  @OneToMany(mappedBy = "order")
+  private List<OrderProduct> orderProducts = new ArrayList<>();
 
   @Column(nullable = false)
-  private Integer amount;
+  private Integer price;
 
   public Long getId() {
     return id;
@@ -38,19 +34,20 @@ public class Order {
     this.id = id;
   }
 
-  public Integer getAmount() {
-    return amount;
+  public Integer getPrice() {
+    return price;
   }
 
-  public void setAmount(Integer amount) {
-    this.amount = amount;
+  public void setPrice(Integer price) {
+    this.price = price;
   }
 
-  public List<Product> getProducts() {
-    return products;
+  public List<OrderProduct> getOrderProducts() {
+    return orderProducts;
   }
 
-  public void setProducts(List<Product> products) {
-    this.products = products;
+  public void setOrderProducts(
+    List<OrderProduct> orderProducts) {
+    this.orderProducts = orderProducts;
   }
 }
