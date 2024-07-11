@@ -8,3 +8,4 @@
 - [ ] implement product update
 - [ ] implement input validations (maybe use spring validations)
 - [ ] implement admin area (stock, manage products, etc)
+- [ ] create tests for product, order and user
