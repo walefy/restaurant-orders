@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -31,13 +32,19 @@ public class ProductController {
   }
 
   @GetMapping
-  public ResponseEntity<List<ProductReturnDto>> findAll() {
-    List<ProductReturnDto> products = this.productService
-      .findAll()
+  public ResponseEntity<List<ProductReturnDto>> findAll(
+    @RequestParam(required = false) String name
+  ) {
+    List<Product> products = name != null
+      ? this.productService.findByName(name)
+      : this.productService.findAll();
+
+    List<ProductReturnDto> productsReturn = products
       .stream()
       .map(ProductReturnDto::fromEntity)
       .toList();
 
-    return ResponseEntity.status(HttpStatus.OK).body(products);
+    return ResponseEntity.status(HttpStatus.OK).body(productsReturn);
   }
+
 }

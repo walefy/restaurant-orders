@@ -30,7 +30,7 @@ public class ProductService {
   }
 
   public List<Product> findByName(String name) {
-    return this.productRepository.findAllByName(name);
+    return this.productRepository.findAllByNameContaining(name);
   }
 
   public void delete(Long id) throws ProductNotFoundException {
