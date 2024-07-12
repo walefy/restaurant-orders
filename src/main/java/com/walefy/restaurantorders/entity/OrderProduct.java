@@ -25,7 +25,7 @@ public class OrderProduct {
   private Product product;
 
   @Column(nullable = false)
-  private Integer quantity;
+  private Integer price;
 
   public OrderProduct(Order order, Product product) {
     this.order = order;
@@ -56,11 +56,11 @@ public class OrderProduct {
     this.product = product;
   }
 
-  public Integer getQuantity() {
-    return quantity;
+  public Integer getPrice() {
+    return price;
   }
 
-  public void setQuantity(Integer quantity) {
-    this.quantity = quantity;
+  public void setPrice(Integer price) {
+    this.price = price;
   }
 }

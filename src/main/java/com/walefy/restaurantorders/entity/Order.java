@@ -20,23 +20,12 @@ public class Order {
   @OneToMany(mappedBy = "order")
   private List<OrderProduct> orderProducts = new ArrayList<>();
 
-  @Column(nullable = false)
-  private Integer price;
-
   public Long getId() {
     return id;
   }
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public Integer getPrice() {
-    return price;
-  }
-
-  public void setPrice(Integer price) {
-    this.price = price;
   }
 
   public List<OrderProduct> getOrderProducts() {
