@@ -1,6 +1,5 @@
 package com.walefy.restaurantorders.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -24,13 +23,12 @@ public class OrderProduct {
   @JoinColumn(name = "product_id")
   private Product product;
 
-  @Column(nullable = false)
-  private Integer price;
-
   public OrderProduct(Order order, Product product) {
     this.order = order;
     this.product = product;
   }
+
+  public OrderProduct() {}
 
   public Order getOrder() {
     return order;
@@ -54,13 +52,5 @@ public class OrderProduct {
 
   public void setProduct(Product product) {
     this.product = product;
-  }
-
-  public Integer getPrice() {
-    return price;
-  }
-
-  public void setPrice(Integer price) {
-    this.price = price;
   }
 }
