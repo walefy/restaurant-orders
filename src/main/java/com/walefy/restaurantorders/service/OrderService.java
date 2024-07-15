@@ -10,8 +10,6 @@ import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.repository.OrderProductRepository;
 import com.walefy.restaurantorders.repository.OrderRepository;
-import com.walefy.restaurantorders.repository.ProductRepository;
-import com.walefy.restaurantorders.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,33 +18,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrderService {
   private final OrderRepository orderRepository;
-  private final ProductRepository productRepository;
-  private final UserRepository userRepository;
   private final OrderProductRepository orderProductRepository;
+  private final ProductService productService;
+  private final UserService userService;
 
   @Autowired
-  public OrderService(OrderRepository orderRepository, ProductRepository productRepository,
-    UserRepository userRepository, OrderProductRepository orderProductRepository) {
+  public OrderService(
+    OrderRepository orderRepository,
+    ProductService productService,
+    UserService userService,
+    OrderProductRepository orderProductRepository
+  ) {
     this.orderRepository = orderRepository;
-    this.productRepository = productRepository;
-    this.userRepository = userRepository;
+    this.productService = productService;
+    this.userService = userService;
     this.orderProductRepository = orderProductRepository;
   }
 
   public Order create(OrderCreateDto orderCreate)
     throws ProductNotFoundException, UserNotFoundException {
-    User user = this.userRepository
-      .findById(orderCreate.userId())
-      .orElseThrow(UserNotFoundException::new);
-
+    User user = this.userService.findById(orderCreate.userId());
     Order order = new Order(user);
     List<OrderProduct> orderProducts = new ArrayList<>();
 
     for (long id : orderCreate.productsIds()) {
-      Product product = productRepository
-        .findById(id)
-        .orElseThrow(() -> new ProductNotFoundException(id));
-
+      Product product = this.productService.findById(id);
       OrderProduct orderProduct = new OrderProduct(order, product);
       orderProducts.add(orderProduct);
     }
