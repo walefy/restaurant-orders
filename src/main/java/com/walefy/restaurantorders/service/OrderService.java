@@ -8,7 +8,9 @@ import com.walefy.restaurantorders.repository.OrderRepository;
 import com.walefy.restaurantorders.repository.ProductRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class OrderService {
   private final OrderRepository orderRepository;
   private final ProductRepository productRepository;
