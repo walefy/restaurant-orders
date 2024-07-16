@@ -48,7 +48,6 @@ public class UserService {
       products.add(product);
     }
 
-//    user.setCart(products);
     return this.userRepository.save(user);
   }
 
