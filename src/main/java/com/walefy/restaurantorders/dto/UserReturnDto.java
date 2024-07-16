@@ -7,7 +7,6 @@ public record UserReturnDto(
   Long id,
   String name,
   String email,
-  String password,
   Role role,
   String imageUrl
 ) {
@@ -16,7 +15,6 @@ public record UserReturnDto(
       user.getId(),
       user.getName(),
       user.getEmail(),
-      user.getPassword(),
       user.getRole(),
       user.getImageUrl()
     );

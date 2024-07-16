@@ -1,9 +1,12 @@
 package com.walefy.restaurantorders.service;
 
 import com.walefy.restaurantorders.dto.UserCreateDto;
+import com.walefy.restaurantorders.entity.Product;
 import com.walefy.restaurantorders.entity.User;
+import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
   private final UserRepository userRepository;
+  private final ProductService productService;
 
   @Autowired
-  public UserService(UserRepository userRepository) {
+  public UserService(UserRepository userRepository, ProductService productService) {
     this.userRepository = userRepository;
+    this.productService = productService;
   }
 
   public User create(UserCreateDto userCreate) {
@@ -31,6 +36,20 @@ public class UserService {
 
   public User findById(Long id) throws UserNotFoundException {
     return this.userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+  }
+
+  public User addProductsInCart(Long userId, List<Long> productsIds)
+    throws ProductNotFoundException, UserNotFoundException {
+    User user = this.findById(userId);
+    List<Product> products = user.getCart();
+
+    for (long id : productsIds) {
+      Product product = this.productService.findById(id);
+      products.add(product);
+    }
+
+//    user.setCart(products);
+    return this.userRepository.save(user);
   }
 
   public void delete(Long id) throws UserNotFoundException {
