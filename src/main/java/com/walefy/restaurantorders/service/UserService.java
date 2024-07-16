@@ -6,10 +6,10 @@ import com.walefy.restaurantorders.entity.User;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.repository.UserRepository;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -38,6 +38,7 @@ public class UserService {
     return this.userRepository.findById(id).orElseThrow(UserNotFoundException::new);
   }
 
+  @Transactional
   public User addProductsInCart(Long userId, List<Long> productsIds)
     throws ProductNotFoundException, UserNotFoundException {
     User user = this.findById(userId);

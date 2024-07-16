@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
@@ -35,6 +36,7 @@ public class OrderService {
     this.orderProductRepository = orderProductRepository;
   }
 
+  @Transactional
   public Order create(OrderCreateDto orderCreate)
     throws ProductNotFoundException, UserNotFoundException {
     User user = this.userService.findById(orderCreate.userId());
