@@ -1,6 +1,6 @@
 package com.walefy.restaurantorders.controller;
 
-import com.walefy.restaurantorders.dto.AddProductInCartDto;
+import com.walefy.restaurantorders.dto.ProductsIdsDto;
 import com.walefy.restaurantorders.dto.UserCreateDto;
 import com.walefy.restaurantorders.dto.UserReturnDto;
 import com.walefy.restaurantorders.dto.UserReturnWithCartDto;
@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,9 +37,21 @@ public class UserController {
   }
 
   @PostMapping("{userId}/product/cart/")
-  public ResponseEntity<UserReturnWithCartDto> addProductsInCart(@PathVariable Long userId, @RequestBody
-    AddProductInCartDto addProductInCart) throws UserNotFoundException, ProductNotFoundException {
-    User user = this.userService.addProductsInCart(userId, addProductInCart.productsIds());
+  public ResponseEntity<UserReturnWithCartDto> addProductsInCart(
+    @PathVariable Long userId,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.addProductsInCart(userId, productsIdsDto.productsIds());
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @DeleteMapping("{userId}/product/cart/")
+  public ResponseEntity<UserReturnWithCartDto> removeProductsFromCart(
+    @PathVariable Long userId,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.removeProductsFromCart(userId, productsIdsDto.productsIds());
 
     return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
   }

@@ -7,6 +7,7 @@ import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.repository.UserRepository;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +48,25 @@ public class UserService {
     for (long id : productsIds) {
       Product product = this.productService.findById(id);
       products.add(product);
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  @Transactional
+  public User removeProductsFromCart(Long userId, List<Long> productsIds)
+    throws UserNotFoundException, ProductNotFoundException {
+    User user = this.findById(userId);
+    List<Product> products = user.getCart();
+
+    for (Long id : productsIds) {
+      Product product = products
+        .stream()
+        .filter(p -> Objects.equals(p.getId(), id))
+        .findFirst()
+        .orElseThrow(() -> new ProductNotFoundException(id));
+
+      products.remove(product);
     }
 
     return this.userRepository.save(user);
