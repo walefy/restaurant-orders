@@ -4,16 +4,22 @@ import com.walefy.restaurantorders.dto.UserCreateDto;
 import com.walefy.restaurantorders.entity.Product;
 import com.walefy.restaurantorders.entity.User;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
+import com.walefy.restaurantorders.exception.UserAlreadyRegistered;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final ProductService productService;
 
@@ -23,16 +29,20 @@ public class UserService {
     this.productService = productService;
   }
 
-  public User create(UserCreateDto userCreate) {
-    return this.userRepository.save(userCreate.toEntity());
+  public User create(UserCreateDto userCreate) throws UserAlreadyRegistered {
+    Optional<User> userExists = this.userRepository.findByEmail(userCreate.email());
+
+    if (userExists.isPresent()) {
+      throw new UserAlreadyRegistered();
+    }
+
+    User user = userCreate.toEntity();
+    user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+    return this.userRepository.save(user);
   }
 
   public List<User> findAll() {
     return this.userRepository.findAll();
-  }
-
-  public User findByEmail(String email) throws UserNotFoundException {
-    return this.userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
   }
 
   public User findById(Long id) throws UserNotFoundException {
@@ -75,5 +85,12 @@ public class UserService {
   public void delete(Long id) throws UserNotFoundException {
     User user = this.findById(id);
     this.userRepository.delete(user);
+  }
+
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    return this.userRepository
+      .findByEmail(email)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
   }
 }
