@@ -5,7 +5,6 @@ import com.walefy.restaurantorders.dto.OrderReturnDto;
 import com.walefy.restaurantorders.entity.Order;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
-import com.walefy.restaurantorders.repository.OrderRepository;
 import com.walefy.restaurantorders.service.OrderService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
