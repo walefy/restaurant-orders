@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ public class ProductController {
   }
 
   @PostMapping
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<ProductReturnDto> create(@RequestBody ProductCreateDto productCreate) {
     Product product = this.productService.create(productCreate);
     return ResponseEntity.status(HttpStatus.CREATED).body(ProductReturnDto.fromEntity(product));
@@ -58,6 +60,7 @@ public class ProductController {
   }
 
   @DeleteMapping("/{id}")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<Void> deleteById(@PathVariable Long id) throws ProductNotFoundException {
     this.productService.delete(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

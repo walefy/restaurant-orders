@@ -5,12 +5,12 @@ import com.walefy.restaurantorders.dto.OrderReturnDto;
 import com.walefy.restaurantorders.entity.Order;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
-import com.walefy.restaurantorders.repository.OrderRepository;
 import com.walefy.restaurantorders.service.OrderService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +35,7 @@ public class OrderController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<List<OrderReturnDto>> findAll() {
     List<OrderReturnDto> orders = this.orderService
       .findAll()

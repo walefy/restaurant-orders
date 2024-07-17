@@ -6,6 +6,7 @@ import com.walefy.restaurantorders.dto.UserReturnDto;
 import com.walefy.restaurantorders.dto.UserReturnWithCartDto;
 import com.walefy.restaurantorders.entity.User;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
+import com.walefy.restaurantorders.exception.UserAlreadyRegistered;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.service.UserService;
 import java.util.List;
@@ -31,7 +32,8 @@ public class UserController {
   }
 
   @PostMapping
-  public ResponseEntity<UserReturnDto> create(@RequestBody UserCreateDto userCreate) {
+  public ResponseEntity<UserReturnDto> create(@RequestBody UserCreateDto userCreate)
+    throws UserAlreadyRegistered {
     User user = this.userService.create(userCreate);
     return ResponseEntity.status(HttpStatus.CREATED).body(UserReturnDto.fromEntity(user));
   }
