@@ -72,6 +72,32 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body(users);
   }
 
+  @GetMapping("/email/{email}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<UserReturnWithCartDto> findByEmail(@PathVariable String email)
+    throws UserNotFoundException {
+    User user = this.userService.findByEmail(email);
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @GetMapping("/id/{id}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<UserReturnWithCartDto> findById(@PathVariable Long id)
+    throws UserNotFoundException {
+    User user = this.userService.findById(id);
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @GetMapping("/get-info")
+  public ResponseEntity<UserReturnWithCartDto> getInfo(Authentication authentication)
+    throws UserNotFoundException {
+    User user = this.userService.findByEmail(authentication.getName());
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
   @DeleteMapping("/{userId}")
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<Void> deleteById(@PathVariable Long id) throws UserNotFoundException {
