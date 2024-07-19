@@ -82,7 +82,7 @@ public class UserService implements UserDetailsService {
     return this.userRepository.save(user);
   }
 
-  public void delete(Long id) throws UserNotFoundException {
+  public void deleteById(Long id) throws UserNotFoundException {
     User user = this.findById(id);
     this.userRepository.delete(user);
   }

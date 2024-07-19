@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +60,7 @@ public class UserController {
   }
 
   @GetMapping
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<List<UserReturnDto>> findAll() {
     List<UserReturnDto> users = this.userService
       .findAll()
@@ -67,5 +69,13 @@ public class UserController {
       .toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(users);
+  }
+
+  @DeleteMapping("/{userId}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<Void> deleteById(@PathVariable Long id) throws UserNotFoundException {
+    this.userService.deleteById(id);
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 }
