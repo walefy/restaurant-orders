@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,6 +76,14 @@ public class UserController {
   @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<Void> deleteById(@PathVariable Long id) throws UserNotFoundException {
     this.userService.deleteById(id);
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+  }
+
+  @DeleteMapping
+  public ResponseEntity<Void> deleteByEmail(Authentication authentication)
+    throws UserNotFoundException {
+    this.userService.deleteByEmail(authentication.getName());
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }

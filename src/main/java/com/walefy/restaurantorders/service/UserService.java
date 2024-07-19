@@ -49,6 +49,10 @@ public class UserService implements UserDetailsService {
     return this.userRepository.findById(id).orElseThrow(UserNotFoundException::new);
   }
 
+  public User findByEmail(String email) throws UserNotFoundException {
+    return this.userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+  }
+
   @Transactional
   public User addProductsInCart(Long userId, List<Long> productsIds)
     throws ProductNotFoundException, UserNotFoundException {
@@ -84,6 +88,11 @@ public class UserService implements UserDetailsService {
 
   public void deleteById(Long id) throws UserNotFoundException {
     User user = this.findById(id);
+    this.userRepository.delete(user);
+  }
+
+  public void deleteByEmail(String email) throws UserNotFoundException {
+    User user = this.findByEmail(email);
     this.userRepository.delete(user);
   }
 
