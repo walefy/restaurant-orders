@@ -5,6 +5,7 @@ import com.walefy.restaurantorders.dto.UserCreateDto;
 import com.walefy.restaurantorders.dto.UserReturnDto;
 import com.walefy.restaurantorders.dto.UserReturnWithCartDto;
 import com.walefy.restaurantorders.entity.User;
+import com.walefy.restaurantorders.exception.InvalidAdminTokenException;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserAlreadyRegistered;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
@@ -13,6 +14,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +36,13 @@ public class UserController {
 
   @PostMapping
   public ResponseEntity<UserReturnDto> create(@RequestBody UserCreateDto userCreate)
-    throws UserAlreadyRegistered {
+    throws UserAlreadyRegistered, InvalidAdminTokenException {
     User user = this.userService.create(userCreate);
     return ResponseEntity.status(HttpStatus.CREATED).body(UserReturnDto.fromEntity(user));
   }
 
   @PostMapping("{userId}/product/cart/")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserReturnWithCartDto> addProductsInCart(
     @PathVariable Long userId,
     @RequestBody ProductsIdsDto productsIdsDto
@@ -49,6 +53,7 @@ public class UserController {
   }
 
   @DeleteMapping("{userId}/product/cart/")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserReturnWithCartDto> removeProductsFromCart(
     @PathVariable Long userId,
     @RequestBody ProductsIdsDto productsIdsDto
@@ -58,7 +63,34 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
   }
 
+  @PostMapping("/product/cart/")
+  public ResponseEntity<UserReturnWithCartDto> addProductsInOwnCart(
+    Authentication authentication,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.addProductsInOwnCart(
+      authentication.getName(),
+      productsIdsDto.productsIds()
+    );
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @DeleteMapping("/product/cart/")
+  public ResponseEntity<UserReturnWithCartDto> removeProductsFromOwnCart(
+    Authentication authentication,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.removeProductsFromOwnCart(
+      authentication.getName(),
+      productsIdsDto.productsIds()
+    );
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
   @GetMapping
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<List<UserReturnDto>> findAll() {
     List<UserReturnDto> users = this.userService
       .findAll()
@@ -67,5 +99,47 @@ public class UserController {
       .toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(users);
+  }
+
+  @GetMapping("/email/{email}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<UserReturnWithCartDto> findByEmail(@PathVariable String email)
+    throws UserNotFoundException {
+    User user = this.userService.findByEmail(email);
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @GetMapping("/id/{id}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<UserReturnWithCartDto> findById(@PathVariable Long id)
+    throws UserNotFoundException {
+    User user = this.userService.findById(id);
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @GetMapping("/get-info")
+  public ResponseEntity<UserReturnWithCartDto> getInfo(Authentication authentication)
+    throws UserNotFoundException {
+    User user = this.userService.findByEmail(authentication.getName());
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @DeleteMapping("/{userId}")
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public ResponseEntity<Void> deleteById(@PathVariable Long id) throws UserNotFoundException {
+    this.userService.deleteById(id);
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+  }
+
+  @DeleteMapping
+  public ResponseEntity<Void> deleteByEmail(Authentication authentication)
+    throws UserNotFoundException {
+    this.userService.deleteByEmail(authentication.getName());
+
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
   }
 }
