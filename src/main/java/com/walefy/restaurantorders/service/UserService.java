@@ -87,9 +87,42 @@ public class UserService implements UserDetailsService {
   }
 
   @Transactional
+  public User addProductsInOwnCart(String email, List<Long> productsIds)
+    throws ProductNotFoundException, UserNotFoundException {
+    User user = this.findByEmail(email);
+    List<Product> products = user.getCart();
+
+    for (long id : productsIds) {
+      Product product = this.productService.findById(id);
+      products.add(product);
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  @Transactional
   public User removeProductsFromCart(Long userId, List<Long> productsIds)
     throws UserNotFoundException, ProductNotFoundException {
     User user = this.findById(userId);
+    List<Product> products = user.getCart();
+
+    for (Long id : productsIds) {
+      Product product = products
+        .stream()
+        .filter(p -> Objects.equals(p.getId(), id))
+        .findFirst()
+        .orElseThrow(() -> new ProductNotFoundException(id));
+
+      products.remove(product);
+    }
+
+    return this.userRepository.save(user);
+  }
+
+  @Transactional
+  public User removeProductsFromOwnCart(String email, List<Long> productsIds)
+    throws UserNotFoundException, ProductNotFoundException {
+    User user = this.findByEmail(email);
     List<Product> products = user.getCart();
 
     for (Long id : productsIds) {

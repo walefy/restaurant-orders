@@ -42,6 +42,7 @@ public class UserController {
   }
 
   @PostMapping("{userId}/product/cart/")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserReturnWithCartDto> addProductsInCart(
     @PathVariable Long userId,
     @RequestBody ProductsIdsDto productsIdsDto
@@ -52,11 +53,38 @@ public class UserController {
   }
 
   @DeleteMapping("{userId}/product/cart/")
+  @PreAuthorize("hasAuthority('ADMIN')")
   public ResponseEntity<UserReturnWithCartDto> removeProductsFromCart(
     @PathVariable Long userId,
     @RequestBody ProductsIdsDto productsIdsDto
   ) throws UserNotFoundException, ProductNotFoundException {
     User user = this.userService.removeProductsFromCart(userId, productsIdsDto.productsIds());
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @PostMapping("/product/cart/")
+  public ResponseEntity<UserReturnWithCartDto> addProductsInOwnCart(
+    Authentication authentication,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.addProductsInOwnCart(
+      authentication.getName(),
+      productsIdsDto.productsIds()
+    );
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
+  }
+
+  @DeleteMapping("/product/cart/")
+  public ResponseEntity<UserReturnWithCartDto> removeProductsFromOwnCart(
+    Authentication authentication,
+    @RequestBody ProductsIdsDto productsIdsDto
+  ) throws UserNotFoundException, ProductNotFoundException {
+    User user = this.userService.removeProductsFromOwnCart(
+      authentication.getName(),
+      productsIdsDto.productsIds()
+    );
 
     return ResponseEntity.status(HttpStatus.OK).body(UserReturnWithCartDto.fromEntity(user));
   }
