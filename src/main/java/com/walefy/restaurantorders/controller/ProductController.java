@@ -5,6 +5,7 @@ import com.walefy.restaurantorders.dto.ProductReturnDto;
 import com.walefy.restaurantorders.entity.Product;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.service.ProductService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ public class ProductController {
 
   @PostMapping
   @PreAuthorize("hasAuthority('ADMIN')")
-  public ResponseEntity<ProductReturnDto> create(@RequestBody ProductCreateDto productCreate) {
+  public ResponseEntity<ProductReturnDto> create(@RequestBody @Valid ProductCreateDto productCreate) {
     Product product = this.productService.create(productCreate);
     return ResponseEntity.status(HttpStatus.CREATED).body(ProductReturnDto.fromEntity(product));
   }

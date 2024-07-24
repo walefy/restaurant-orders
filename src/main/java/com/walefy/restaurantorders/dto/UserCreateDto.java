@@ -17,7 +17,7 @@ public record UserCreateDto(
   @NotBlank(message = "password attribute must not be blank")
   @Size(min = 6, message = "password must have more than 6 characters")
   String password,
-  @NotNull(message = "role attribute must not be blank! Try USER or ADMIN")
+  @NotNull(message = "role attribute must not be null! Try USER or ADMIN")
   Role role,
   String imageUrl,
   String adminToken
