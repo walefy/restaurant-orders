@@ -6,6 +6,7 @@ import com.walefy.restaurantorders.entity.Order;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.exception.UserNotFoundException;
 import com.walefy.restaurantorders.service.OrderService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class OrderController {
   }
 
   @PostMapping
-  public ResponseEntity<OrderReturnDto> create(@RequestBody OrderCreateDto orderCreate)
+  public ResponseEntity<OrderReturnDto> create(@RequestBody @Valid OrderCreateDto orderCreate)
     throws ProductNotFoundException, UserNotFoundException {
     Order order = this.orderService.create(orderCreate);
     return ResponseEntity.status(HttpStatus.CREATED).body(OrderReturnDto.fromEntity(order));
