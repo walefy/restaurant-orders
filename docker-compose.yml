@@ -6,7 +6,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      MYSQL_HOST: database
+      DATABASE_URL: jdbc:mysql://database:3306/restaurantOrders?createDatabaseIfNotExist=true
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+      JWT_SECRET: exampleJwtSecret
+      ADMIN_TOKEN: exampleAdminToken
     depends_on:
       database:
         condition: service_healthy
