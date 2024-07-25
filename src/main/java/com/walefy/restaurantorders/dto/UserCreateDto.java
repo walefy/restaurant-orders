@@ -25,6 +25,6 @@ public record UserCreateDto(
   String adminToken
 ) {
   public User toEntity() {
-    return new User(name, email, password, Role.valueOf(role), imageUrl);
+    return new User(name, email, password, Role.valueOf(role.toUpperCase()), imageUrl);
   }
 }
