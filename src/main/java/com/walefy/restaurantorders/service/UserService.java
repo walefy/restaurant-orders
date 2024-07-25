@@ -35,9 +35,8 @@ public class UserService implements UserDetailsService {
     this.productService = productService;
   }
 
-  private boolean isAdminUser(UserCreateDto userCreate) {
-    Role userRole = Role.valueOf(userCreate.role());
-    return userRole.equals(Role.ADMIN);
+  private boolean isAdminUser(User user) {
+    return user.getRole().equals(Role.ADMIN);
   }
 
   private boolean isValidAdminToken(UserCreateDto userCreate, String adminToken) {
@@ -52,11 +51,12 @@ public class UserService implements UserDetailsService {
       throw new UserAlreadyRegistered();
     }
 
-    if (isAdminUser(userCreate) && !isValidAdminToken(userCreate, adminToken)) {
+    User user = userCreate.toEntity();
+
+    if (isAdminUser(user) && !isValidAdminToken(userCreate, adminToken)) {
       throw new InvalidAdminTokenException();
     }
 
-    User user = userCreate.toEntity();
     user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
     return this.userRepository.save(user);
   }
