@@ -36,7 +36,8 @@ public class UserService implements UserDetailsService {
   }
 
   private boolean isAdminUser(UserCreateDto userCreate) {
-    return userCreate.role().equals(Role.ADMIN);
+    Role userRole = Role.valueOf(userCreate.role());
+    return userRole.equals(Role.ADMIN);
   }
 
   private boolean isValidAdminToken(UserCreateDto userCreate, String adminToken) {
