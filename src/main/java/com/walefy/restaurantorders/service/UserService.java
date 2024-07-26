@@ -1,6 +1,9 @@
 package com.walefy.restaurantorders.service;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walefy.restaurantorders.dto.UserCreateDto;
+import com.walefy.restaurantorders.dto.UserUpdateDto;
 import com.walefy.restaurantorders.entity.Product;
 import com.walefy.restaurantorders.entity.User;
 import com.walefy.restaurantorders.exception.InvalidAdminTokenException;
@@ -25,14 +28,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
   private final UserRepository userRepository;
   private final ProductService productService;
+  private final ObjectMapper objectMapper;
 
   @Value("${api.security.admin.token}")
   private String adminToken;
 
   @Autowired
-  public UserService(UserRepository userRepository, ProductService productService) {
+  public UserService(UserRepository userRepository, ProductService productService,
+    ObjectMapper objectMapper) {
     this.userRepository = userRepository;
     this.productService = productService;
+    this.objectMapper = objectMapper;
   }
 
   private boolean isAdminUser(User user) {
@@ -147,6 +153,24 @@ public class UserService implements UserDetailsService {
   public void deleteByEmail(String email) throws UserNotFoundException {
     User user = this.findByEmail(email);
     this.userRepository.delete(user);
+  }
+
+  @Transactional
+  public User update(String email, UserUpdateDto userUpdateData)
+    throws UserNotFoundException, JsonMappingException {
+    User user = this.findByEmail(email);
+
+    objectMapper.updateValue(user, userUpdateData);
+    return this.userRepository.save(user);
+  }
+
+  @Transactional
+  public User update(Long id, UserUpdateDto userUpdateData)
+    throws UserNotFoundException, JsonMappingException {
+    User user = this.findById(id);
+
+    objectMapper.updateValue(user, userUpdateData);
+    return this.userRepository.save(user);
   }
 
   @Override

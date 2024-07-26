@@ -1,14 +1,16 @@
 package com.walefy.restaurantorders.controller.advice;
 
-
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.walefy.restaurantorders.exception.InvalidAdminTokenException;
 import com.walefy.restaurantorders.exception.NotFoundException;
 import com.walefy.restaurantorders.exception.UserAlreadyRegistered;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +18,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GeneralControllerAdvice {
-  @ExceptionHandler(MethodArgumentNotValidException.class)
+
+  @ExceptionHandler({ HttpMessageNotReadableException.class })
+  public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    Map<String, String> response = new HashMap<>(Map.of("message", "Invalid input!"));
+
+    Throwable cause = e.getMostSpecificCause();
+    if (cause instanceof UnrecognizedPropertyException unrecognizedPropertyException) {
+      String unknownField = unrecognizedPropertyException.getPropertyName();
+      String message = String.format("Unknown field '%s' in request body", unknownField);
+      response.put("message", message);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+      .body(response);
+  }
+
+  @ExceptionHandler({ MethodArgumentNotValidException.class })
   public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException e) {
     List<String> stackErrors = e
       .getBindingResult()

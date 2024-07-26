@@ -1,9 +1,11 @@
 package com.walefy.restaurantorders.controller;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.walefy.restaurantorders.dto.ProductsIdsDto;
 import com.walefy.restaurantorders.dto.UserCreateDto;
 import com.walefy.restaurantorders.dto.UserReturnDto;
 import com.walefy.restaurantorders.dto.UserReturnWithCartDto;
+import com.walefy.restaurantorders.dto.UserUpdateDto;
 import com.walefy.restaurantorders.entity.User;
 import com.walefy.restaurantorders.exception.InvalidAdminTokenException;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
@@ -19,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -134,6 +137,14 @@ public class UserController {
     this.userService.deleteById(id);
 
     return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+  }
+
+  @PatchMapping
+  public ResponseEntity<UserReturnDto> update(@RequestBody @Valid UserUpdateDto userUpdateData, Authentication authentication)
+    throws UserNotFoundException, JsonMappingException {
+    User userUpdated = this.userService.update(authentication.getName(), userUpdateData);
+
+    return ResponseEntity.status(HttpStatus.OK).body(UserReturnDto.fromEntity(userUpdated));
   }
 
   @DeleteMapping
