@@ -158,12 +158,11 @@ public class UserService implements UserDetailsService {
   @Transactional
   public User update(String email, UserUpdateDto userUpdateData)
     throws UserNotFoundException, JsonMappingException {
-    throw new JsonMappingException("");
 
-//    User user = this.findByEmail(email);
+    User user = this.findByEmail(email);
 
-//    objectMapper.updateValue(user, userUpdateData);
-//    return this.userRepository.save(user);
+    objectMapper.updateValue(user, userUpdateData);
+    return this.userRepository.save(user);
   }
 
   @Transactional
