@@ -1,5 +1,6 @@
 package com.walefy.restaurantorders.controller.advice;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.walefy.restaurantorders.exception.InvalidAdminTokenException;
 import com.walefy.restaurantorders.exception.NotFoundException;
@@ -33,6 +34,15 @@ public class GeneralControllerAdvice {
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
       .body(response);
+  }
+
+  @ExceptionHandler({ JsonMappingException.class })
+  public ResponseEntity<Map<String, String>> handleJsonMapping(JsonMappingException e) {
+    Map<String, String> response = Map.of(
+      "message", "Invalid input provided. Please check your request data."
+    );
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
   @ExceptionHandler({ MethodArgumentNotValidException.class })
