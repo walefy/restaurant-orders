@@ -1,6 +1,9 @@
 package com.walefy.restaurantorders.service;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walefy.restaurantorders.dto.ProductCreateDto;
+import com.walefy.restaurantorders.dto.ProductUpdateDto;
 import com.walefy.restaurantorders.entity.Product;
 import com.walefy.restaurantorders.exception.ProductNotFoundException;
 import com.walefy.restaurantorders.repository.ProductRepository;
@@ -11,10 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
   private final ProductRepository productRepository;
+  private final ObjectMapper objectMapper;
 
   @Autowired
-  public ProductService(ProductRepository productRepository) {
+  public ProductService(ProductRepository productRepository, ObjectMapper objectMapper) {
     this.productRepository = productRepository;
+    this.objectMapper = objectMapper;
   }
 
   public Product create(ProductCreateDto productCreate) {
@@ -36,5 +41,13 @@ public class ProductService {
   public void delete(Long id) throws ProductNotFoundException {
     Product product = this.findById(id);
     this.productRepository.delete(product);
+  }
+
+  public Product update(Long id, ProductUpdateDto productUpdate)
+    throws ProductNotFoundException, JsonMappingException {
+    Product product = this.findById(id);
+
+    objectMapper.updateValue(product, productUpdate);
+    return this.productRepository.save(product);
   }
 }
