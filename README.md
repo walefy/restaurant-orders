@@ -6,5 +6,6 @@
 - [x] implement order controller
 - [x] implement product update
 - [x] implement input validations (maybe use spring validations)
-- [ ] implement admin area (stock, manage products, etc)
+- [x] implement admin area (stock, manage products, etc)
 - [ ] create tests for product, order and user
+- [ ] implement reset password and confirm email with spring-sendmail
